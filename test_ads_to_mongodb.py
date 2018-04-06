@@ -18,16 +18,12 @@ def q():
     return 'star'
 
 
-# @pytest.fixture
-# def db():
-#     return mongomock.MongoClient().db
-
-
 @pytest.fixture
 def collection():
     return mongomock.MongoClient().db.collection
 
 
+@pytest.fixture
 def mock_ads_query(q, fl=None, rows=None):
 
     if fl is None:
