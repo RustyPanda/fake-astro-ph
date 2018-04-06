@@ -18,9 +18,9 @@ def q():
     return 'star'
 
 
-@pytest.fixture
-def db():
-    return mongomock.MongoClient().db
+# @pytest.fixture
+# def db():
+#     return mongomock.MongoClient().db
 
 
 @pytest.fixture
@@ -55,6 +55,6 @@ def test_save_query_to_db(query_params, collection):
 
 
 def test_save_ads_to_db(collection):  # will construct appropriate query inside
-    ads_to_mongodb.save_ads_to_collection(collection)
+    ads_to_mongodb.save_ads_to_collection(collection, query_max_rows=2)
     # check updated db has new data
-
+    print(collection.find_one())

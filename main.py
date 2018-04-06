@@ -2,6 +2,7 @@ import subprocess
 
 from pymongo import MongoClient
 
+import ads_to_mongodb
 
 # ensure no running process
 # subprocess.call(
@@ -16,13 +17,20 @@ from pymongo import MongoClient
 # mongod = subprocess.call('mongod --dbpath ~/mongodb/data/db', shell=True)
 # mongod.terminate()
 
-# # connect
+fresh_download = False
+
+# connect
 client = MongoClient()  # default host/port
-# #
+
 # # create/connect to instance database
 db = client.test_database
-ads_papers = db.ads_papers # collection
-# #
-#
-# #
+ads_papers = db.ads_papers  # collection
+
+if fresh_download:
+    ads_to_mongodb.save_ads_to_collection(ads_papers, query_max_rows=2000)
+
+# check there's something in mongodb
+print(ads_papers.find_one())
+
+
 db.eval("db.shutdownServer()")
