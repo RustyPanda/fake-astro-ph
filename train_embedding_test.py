@@ -10,7 +10,8 @@ def mock_paper_data():
     return [
         {
             'title': ['galaxies are cool and clusters are not'],
-            'abstract': 'first_abstract'
+            'abstract': 'first_abstract',
+            'author': ['author_a'],
         },
 
         {
@@ -35,6 +36,14 @@ def corpus(papers):
 def test_iter(corpus):
     print([title for title in corpus])
     # TODO use asserts
+
+
+def test_corpus_fields(corpus):
+    print(list(corpus.abstracts))
+    print(list(corpus.titles))
+    print(list(corpus.pubdate))
+    print(list(corpus.aff))
+    print(list(corpus.author))
 
 
 def test_get_vectors():
