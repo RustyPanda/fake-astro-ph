@@ -17,6 +17,22 @@ class SpacyText(markovify.Text):
     functions. 
     """
 
+    def __init__(self, input_text, state_size=2, chain=None, parsed_sentences=None, retain_original=True, embedding=None):
+    """
+    input_text: A string.
+    state_size: An integer, indicating the number of words in the model's state.
+    chain: A trained markovify.Chain instance for this text, if pre-processed.
+    parsed_sentences: A list of lists, where each outer list is a "run"
+          of the process (e.g. a single sentence), and each inner list
+          contains the steps (e.g. words) in the run. If you want to simulate
+          an infinite process, you can come very close by passing just one, very
+          long run.
+    """
+    can_make_sentences = parsed_sentences is not None or input_text is not None
+    self.retain_original = retain_original and can_make_sentences
+    self.state_size = state_size
+    self.embedding = embedding
+
     @classmethod
     def from_dict(cls, obj, **kwargs):
         """
@@ -86,12 +102,12 @@ class SpacyText(markovify.Text):
         if re.search(reject_pat, decoded): return False
         return True
 
-    def load_spacy(self, embedding):
+    def load_spacy(self):
         """
         Load the embedding we'll use with spacy
         """
 
-        nlp = spacy.load(embedding)
+        nlp = spacy.load(self.embedding)
         #This was required when I changed from 'en' to en_vectors_web_lg.
         #Not entirely sure why?
         nlp.add_pipe(nlp.create_pipe('sentencizer'))
@@ -105,8 +121,8 @@ class SpacyText(markovify.Text):
         "sentences," each of which is a list of words. Before splitting into 
         words, the sentences are filtered through `self.test_sentence_input`
         """
-        embedding='en_vectors_web_lg'
-        nlp=self.load_spacy(embedding)
+        #embedding='en_vectors_web_lg'
+        nlp=self.load_spacy()
         spacy_corpus=nlp(text)
         sentences = self.sentence_split(spacy_corpus)
         passing = filter(self.test_sentence_input, sentences)
@@ -132,7 +148,7 @@ def load_text_from_db(text_iterable):
     return all_texts
 
 
-def make_markov_model(text, textClass=SpacyText, savename=None):
+def make_markov_model(text, textClass=SpacyText, embedding=None, savename=None):
 
     """
     Build a Markovify text model, using either the base Text class
@@ -141,7 +157,7 @@ def make_markov_model(text, textClass=SpacyText, savename=None):
     if textClass is None:
         textClass=markovify.Text
 
-    text_model = textClass(text)
+    text_model = textClass(text, embedding=embedding)
     
     if savename:
         model_json = text_model.to_json()
@@ -182,9 +198,9 @@ if __name__=='__main__':
     
     #Do we want to save our model?
     save=True
-    savename='saved_models/text_model.json'
+    savename='./saved_models/text_model.json'
 
-    text=load_text_from_txtfile(fname='../example_corpus/abstracts.txt')
+    text=load_text_from_txtfile(fname='./example_corpus/abstracts.txt')
 
     if generate_Markov_Model:
         text_model=make_markov_model(text, savename=None, simple_testing=True)
