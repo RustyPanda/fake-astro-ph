@@ -2,12 +2,29 @@ import markovify
 import re
 import spacy
 from unidecode import unidecode
+import json
 
 
 
 
+class SpacyText(markovify.Text):
+    """
+    A class to integrate Spacy with Markovify. Mostly taken from
+    https://joshuanewlan.com/spacy-and-markovify with a few edits
+    """
 
-class POSifiedText(markovify.Text):
+    @classmethod
+    def from_dict(cls, obj, **kwargs):
+        return cls(
+            None,
+            state_size=obj["state_size"],
+            chain=markovify.Chain.from_json(obj["chain"]),
+            parsed_sentences=obj.get("parsed_sentences")
+        )
+
+    @classmethod
+    def from_json(cls, json_str):
+        return cls.from_dict(json.loads(json_str))
 
 
     def sentence_split(self, corpus):
@@ -30,6 +47,8 @@ class POSifiedText(markovify.Text):
         sentence = " ".join(word.split("::")[0] for word in words)
         return sentence
 
+
+
     def test_sentence_input(self, sentence):
         """
         A basic sentence filter. This one rejects sentences that contain
@@ -47,13 +66,23 @@ class POSifiedText(markovify.Text):
         if re.search(reject_pat, decoded): return False
         return True
 
+    def load_spacy(self, embedding):
+
+
+        nlp = spacy.load(embedding)
+        nlp.add_pipe(nlp.create_pipe('sentencizer'))
+
+        
+        return nlp
+
     def generate_corpus(self, text):
         """
         Given a text string, returns a list of lists; that is, a list of
         "sentences," each of which is a list of words. Before splitting into 
         words, the sentences are filtered through `self.test_sentence_input`
         """
-        nlp = spacy.load('en_vectors_web_lg')
+        embedding='en_vectors_web_lg'
+        nlp=self.load_spacy(embedding)
         corpus=nlp(text)
         sentences = self.sentence_split(corpus)
         passing = filter(self.test_sentence_input, sentences)
@@ -63,12 +92,16 @@ class POSifiedText(markovify.Text):
 
 
 
-def load_text(fname):
+def load_text_from_txtfile(fname):
 
     # Get raw text as string.
     import io
     with io.open(fname, "r", encoding="utf-8") as f:
         text = f.read() 
+
+    return text
+
+def get_text_from_db(db):
 
     return text
 
@@ -92,22 +125,45 @@ def make_sentences(text_model, n_sentences, **kwargs):
     return sentences
 
 
+
+
 if __name__=='__main__':
 
 
-    fname='../example_corpus/abstracts.txt'
-    text=load_text(fname)
+    markov_model_fname_to_load='text_model.txt'
+    generate_Markov_Model=False
 
-    
+    simple_testing=True
+    save=True
+    savename='text_model.json'
+
+    if generate_Markov_Model or markov_model_fname_to_load is None:
+
+        
+        if simple_testing:
+            fname='../example_corpus/abstracts.txt'
+            text=load_text_from_txtfile(fname)
+        else:
+            #TODO load text from DB
+            text=None
+            
+
+        # Build the model.
+        text_model=build_model(text, textClass=SpacyText)
+        model_json = text_model.to_json()
+        if save:
+            with open(savename, 'w') as outfile:
+                json.dump(model_json, outfile)
 
 
-    # Build the model.
-    text_model=build_model(text, textClass=POSifiedText)
+    else:
+        with open(markov_model_fname_to_load, 'r') as f:
+            markov_model=json.load(f)
+        text_model = SpacyText.from_json(markov_model)
+
 
     #print sentences
-    sentences=make_sentences(n_sentences=5, text_model=text_model, tries=100, test_output=True)
+    sentences=make_sentences(n_sentences=10, text_model=text_model, tries=100, test_output=True)
 
     for s in sentences:
-        print s
-
-
+        print u'{}/n'.format(s)

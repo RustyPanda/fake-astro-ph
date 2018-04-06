@@ -3,6 +3,9 @@ import generate_sentences as G
 import markovify
 import os
 
+
+
+
 @pytest.fixture
 def get_fname():
     fname='../example_corpus/abstracts.txt'
@@ -45,6 +48,13 @@ def test_make_sentences(get_text_model):
     assert len(sentences)==n_sentences
 
 
+
+def test_text_from_db():
+    db=None
+    G.get_text_from_db(db)
+    
+
+#Testing the class
 
 
 
