@@ -107,8 +107,8 @@ class SpacyText(markovify.Text):
         """
         embedding='en_vectors_web_lg'
         nlp=self.load_spacy(embedding)
-        corpus=nlp(text)
-        sentences = self.sentence_split(corpus)
+        spacy_corpus=nlp(text)
+        sentences = self.sentence_split(spacy_corpus)
         passing = filter(self.test_sentence_input, sentences)
         runs = map(self.word_split, sentences)
 
@@ -126,13 +126,13 @@ def load_text_from_txtfile(fname):
 
     return text
 
-def get_text_from_db(db):
-    #TODO
+def load_text_from_db(text_iterable):
 
-    return text
+    all_texts=list(text_iterable)
+    return all_texts
 
 
-def build_model(text, textClass=None):
+def make_markov_model(text, textClass=SpacyText, savename=None):
 
     """
     Build a Markovify text model, using either the base Text class
@@ -142,18 +142,32 @@ def build_model(text, textClass=None):
         textClass=markovify.Text
 
     text_model = textClass(text)
+    
+    if savename:
+        model_json = text_model.to_json()
+        with open(savename, 'w') as outfile:
+            json.dump(model_json, outfile)
 
     return text_model
 
 
-def make_sentences(text_model, n_sentences, **kwargs):
+def load_markov_model(fname):
+
+    with open(markov_model_fname_to_load, 'r') as f:
+        markov_model=json.load(f)
+    text_model = SpacyText.from_json(markov_model)
+
+    return text_model
+
+
+
+def generate_text(text_model, n_sentences, **kwargs):
     # return five randomly-generated sentences
     sentences=[]
     for i in range(n_sentences):
         sentences.append((text_model.make_sentence(**kwargs)))
 
     return sentences
-
 
 
 
@@ -164,41 +178,20 @@ if __name__=='__main__':
     markov_model_fname_to_load='saved_models/text_model.txt'
     generate_Markov_Model=False
 
-    #simple testing- use the text file I manually saved from ads
-    simple_testing=True
+
     
     #Do we want to save our model?
     save=True
     savename='saved_models/text_model.json'
 
+    text=load_text_from_txtfile(fname='../example_corpus/abstracts.txt')
 
-    if generate_Markov_Model or markov_model_fname_to_load is None:
-            
-        #Generate our own markov model
-        if simple_testing:
-            fname='../example_corpus/abstracts.txt'
-            text=load_text_from_txtfile(fname)
-        else:
-            #TODO load text from DB
-            text=None
-            
-
-        # Build the model.
-        text_model=build_model(text, textClass=SpacyText)
-        
-        if save:
-            model_json = text_model.to_json()
-            with open(savename, 'w') as outfile:
-                json.dump(model_json, outfile)
-
+    if generate_Markov_Model:
+        text_model=make_markov_model(text, savename=None, simple_testing=True)
     else:
-        with open(markov_model_fname_to_load, 'r') as f:
-            markov_model=json.load(f)
-        text_model = SpacyText.from_json(markov_model)
+        text_model=load_markov_model(markov_model_fname_to_load)
 
-
-    #print sentences
-    sentences=make_sentences(n_sentences=10, text_model=text_model, tries=100, test_output=True)
+    sentences=generate_text(text_model, n_sentences=5, tries=100)
 
     for s in sentences:
         print u'{}'.format(s)
