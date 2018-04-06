@@ -64,11 +64,22 @@
 
             <div class="row">
 
-                <div><p> Here are the latest titles: </p></div>
+                <div class="row">
 
-                    {% for title in fake_titles %}
-                <div><p> {{ title }}  <br></br></p></div>
-                    {% endfor %}
+                    <div><p>        </p></div>
+
+                    <div><p> <b>Here are the latest titles: </b><br></br></p></div>
+
+                </div>
+                <div class="row">
+
+                {% for title in fake_titles %}
+
+                    <div><p> {{ title }}  <br></br></p></div>
+
+                {% endfor %}
+
+                </div>
 
             </div>
 
