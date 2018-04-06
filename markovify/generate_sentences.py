@@ -11,10 +11,17 @@ class SpacyText(markovify.Text):
     """
     A class to integrate Spacy with Markovify. Mostly taken from
     https://joshuanewlan.com/spacy-and-markovify with a few edits
+
+    Inherits from markovify.Text. generate_corpus loads in our text, 
+    wraps it in the nlp-ness of of spacey and then calls the markovify
+    functions. 
     """
 
     @classmethod
     def from_dict(cls, obj, **kwargs):
+        """
+        create a class from a dictionary
+        """
         return cls(
             None,
             state_size=obj["state_size"],
@@ -24,12 +31,18 @@ class SpacyText(markovify.Text):
 
     @classmethod
     def from_json(cls, json_str):
+        """
+        Create this class from a JSON
+        """
         return cls.from_dict(json.loads(json_str))
 
 
     def sentence_split(self, corpus):
         """
-        Splits full-text string into a list of sentences.
+        Splits full-text string into a list of sentences. 
+        Inputs:
+            self:
+            corpus: a spacey document corpus (a 'doc'), with a .sents attribute 
         """
         sentence_list = []
         for sentence in corpus.sents:
@@ -39,11 +52,17 @@ class SpacyText(markovify.Text):
 
     def word_split(self, sentence):
         """
-        Splits a sentence into a list of words.
+        Splits a sentence into a list of words, with their .orth_ and .pos_
+        attributes
         """
         return ["::".join((word.orth_,word.pos_)) for word in sentence]
 
     def word_join(self, words):
+        """
+        Join words together, ignoring the .pos_ attributes after the double
+        semi colon
+        """
+
         sentence = " ".join(word.split("::")[0] for word in words)
         return sentence
 
@@ -62,14 +81,19 @@ class SpacyText(markovify.Text):
             decoded = sentence
         else:
             decoded = unidecode(sentence)
+
         # Sentence shouldn't contain problematic characters
         if re.search(reject_pat, decoded): return False
         return True
 
     def load_spacy(self, embedding):
-
+        """
+        Load the embedding we'll use with spacy
+        """
 
         nlp = spacy.load(embedding)
+        #This was required when I changed from 'en' to en_vectors_web_lg.
+        #Not entirely sure why?
         nlp.add_pipe(nlp.create_pipe('sentencizer'))
 
         
@@ -95,6 +119,7 @@ class SpacyText(markovify.Text):
 def load_text_from_txtfile(fname):
 
     # Get raw text as string.
+    # Ensure the encoding is handled properly!
     import io
     with io.open(fname, "r", encoding="utf-8") as f:
         text = f.read() 
@@ -102,12 +127,17 @@ def load_text_from_txtfile(fname):
     return text
 
 def get_text_from_db(db):
+    #TODO
 
     return text
 
 
 def build_model(text, textClass=None):
 
+    """
+    Build a Markovify text model, using either the base Text class
+    or a custom one
+    """
     if textClass is None:
         textClass=markovify.Text
 
@@ -117,7 +147,7 @@ def build_model(text, textClass=None):
 
 
 def make_sentences(text_model, n_sentences, **kwargs):
-    # Print five randomly-generated sentences
+    # return five randomly-generated sentences
     sentences=[]
     for i in range(n_sentences):
         sentences.append((text_model.make_sentence(**kwargs)))
@@ -129,17 +159,22 @@ def make_sentences(text_model, n_sentences, **kwargs):
 
 if __name__=='__main__':
 
-
-    markov_model_fname_to_load='text_model.txt'
+    #Filename of the markov model we'll load
+    #and whether to generate it again
+    markov_model_fname_to_load='saved_models/text_model.txt'
     generate_Markov_Model=False
 
+    #simple testing- use the text file I manually saved from ads
     simple_testing=True
+    
+    #Do we want to save our model?
     save=True
-    savename='text_model.json'
+    savename='saved_models/text_model.json'
+
 
     if generate_Markov_Model or markov_model_fname_to_load is None:
-
-        
+            
+        #Generate our own markov model
         if simple_testing:
             fname='../example_corpus/abstracts.txt'
             text=load_text_from_txtfile(fname)
@@ -150,11 +185,11 @@ if __name__=='__main__':
 
         # Build the model.
         text_model=build_model(text, textClass=SpacyText)
-        model_json = text_model.to_json()
+        
         if save:
+            model_json = text_model.to_json()
             with open(savename, 'w') as outfile:
                 json.dump(model_json, outfile)
-
 
     else:
         with open(markov_model_fname_to_load, 'r') as f:
@@ -166,4 +201,5 @@ if __name__=='__main__':
     sentences=make_sentences(n_sentences=10, text_model=text_model, tries=100, test_output=True)
 
     for s in sentences:
-        print u'{}/n'.format(s)
+        print u'{}'.format(s)
+        print '\n'
