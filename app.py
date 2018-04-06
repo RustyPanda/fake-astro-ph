@@ -15,7 +15,7 @@ def getitem(obj, item, default):
         return obj[item]
 
 
-@app.route("/tracker", methods=['GET', 'POST'])
+@app.route("/", methods=['GET', 'POST'])
 def tracker():
     """ Very simple embedding of a polynomial chart
     """
@@ -35,11 +35,9 @@ def tracker():
     # hospitals = [hospital] + other_hospitals
 
 
-    # markov_model_loc = 'saved_models/text_model.txt'  # markov model we'll load
-    # text_model = generate_sentences.load_markov_model(markov_model_loc)
-    # sentences = generate_sentences.generate_text(text_model, n_sentences=20, tries=100)
-
-    fake_title = 'a fake title'
+    markov_model_loc = 'saved_models/text_model.txt'  # markov model we'll load
+    text_model = generate_sentences.load_markov_model(markov_model_loc)
+    fake_titles = generate_sentences.generate_text(text_model, n_sentences=20, tries=100)
 
 
     html = render_template(
@@ -49,7 +47,7 @@ def tracker():
         # future_orders=future_orders,
         # selected_hospital=hospital,
         # selected_product=product
-        fake_title=fake_title
+        fake_titles=fake_titles
     )
     return html
 
@@ -68,4 +66,5 @@ def tracker():
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
+
 app.run(host='0.0.0.0', port=port)

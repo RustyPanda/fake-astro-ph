@@ -98,7 +98,9 @@
 
                     <!--</form>-->
 
-                    {{ fake_title }}
+                    {% for title in fake_titles %}
+                        <div> {{ title }} </div>
+                    {% endfor %}
 
                 </div>
 
