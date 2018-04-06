@@ -4,14 +4,36 @@ class Corpus(object):
 
     def __init__(self, papers):
         self.papers = papers  # collection of papers
+        self.abstracts = self.get_field_iterable('abstract')
+        self.titles = self.get_field_iterable('title')
+        self.author = self.get_field_iterable('author')
+        self.pubdate = self.get_field_iterable('pubdate')
+        self.aff = self.get_field_iterable('aff')
 
 
     def __iter__(self):
-        # each yield should return one document. For now, lets do titles
+        # iterating over corpus is main use, will give list of list of title-words
+        # TODO make this explicit
         cursor = self.papers.find({'title': {'$exists': True}})
         for paper_with_title in cursor:
             # [0] because ADS gives title as a list...
-            yield paper_with_title['title'][0].split()  # Want list of list of words.
+            yield paper_with_title['title'][0].split()
+
+
+    def get_field_iterable(self, field):
+        cursor = self.papers.find({field: {'$exists': True}})
+        for paper_with_field in cursor:
+            yield paper_with_field[field]  # full abstract string
+
+
+def get_vectors(corpus, save_loc=None):
+    # see https://rare-technologies.com/word2vec-tutorial/
+    # see https://radimrehurek.com/gensim/models/word2vec.html
+    # all parameters: https://radimrehurek.com/gensim/models/word2vec.html#gensim.models.word2vec.Word2Vec
+    model = models.Word2Vec(corpus, size=100, window=5, min_count=0, workers=4)  # corpus is iterable
+    if save_loc is not None:
+        model.wv.save_word2vec_format(save_loc)
+    return model
 
 
 def clean_text(documents):
@@ -39,13 +61,3 @@ def clean_text(documents):
     # TODO remove latex?
 
     return texts
-
-
-def get_vectors(corpus, save_loc=None):
-    # see https://rare-technologies.com/word2vec-tutorial/
-    # see https://radimrehurek.com/gensim/models/word2vec.html
-    # all parameters: https://radimrehurek.com/gensim/models/word2vec.html#gensim.models.word2vec.Word2Vec
-    model = models.Word2Vec(corpus, size=100, window=5, min_count=0, workers=4)  # corpus is iterable
-    if save_loc is not None:
-        model.save(save_loc)
-    return model

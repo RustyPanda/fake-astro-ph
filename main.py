@@ -24,7 +24,6 @@ embedding_save_loc = 'galaxies_embedding.txt'
 fresh_download = False
 fresh_embedding = True
 
-
 # connect
 client = MongoClient()  # default host/port
 
