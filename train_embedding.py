@@ -5,7 +5,7 @@ class Corpus(object):
     def __init__(self, papers):
         self.papers = papers  # collection of papers
         self.abstracts = self.get_field_iterable('abstract')
-        self.titles = self.get_field_iterable('title')
+        self.titles = self.get_field_iterable('title', fix_list=True)
         self.author = self.get_field_iterable('author')
         self.pubdate = self.get_field_iterable('pubdate')
         self.aff = self.get_field_iterable('aff')
@@ -20,10 +20,13 @@ class Corpus(object):
             yield paper_with_title['title'][0].split()
 
 
-    def get_field_iterable(self, field):
+    def get_field_iterable(self, field, fix_list=False):
         cursor = self.papers.find({field: {'$exists': True}})
         for paper_with_field in cursor:
-            yield paper_with_field[field]  # full abstract string
+            if fix_list:
+                yield paper_with_field[field][0]  # full abstract string
+            else:
+                yield paper_with_field[field]  # full abstract string
 
 
 def get_vectors(corpus, save_loc=None):

@@ -4,8 +4,7 @@ import spacy
 from unidecode import unidecode
 import json
 
-
-
+import word2vec_to_spacy
 
 class SpacyText(markovify.Text):
     """
@@ -105,11 +104,15 @@ class SpacyText(markovify.Text):
         "sentences," each of which is a list of words. Before splitting into 
         words, the sentences are filtered through `self.test_sentence_input`
         """
-        embedding='en_vectors_web_lg'
-        nlp=self.load_spacy(embedding)
+        # embedding='en_vectors_web_lg'
+        # nlp=self.load_spacy(embedding)
+
+        nlp = word2vec_to_spacy.load_spacy_nlp_from_word2vec('word2vec_embeddings/galaxies_embedding.txt')
+        nlp.add_pipe(nlp.create_pipe('sentencizer'))
+
         spacy_corpus=nlp(text)
         sentences = self.sentence_split(spacy_corpus)
-        passing = filter(self.test_sentence_input, sentences)
+        # passing = filter(self.test_sentence_input, sentences)
         runs = map(self.word_split, sentences)
 
         return runs
@@ -153,7 +156,7 @@ def make_markov_model(text, textClass=SpacyText, savename=None):
 
 def load_markov_model(fname):
 
-    with open(markov_model_fname_to_load, 'r') as f:
+    with open(fname, 'r') as f:
         markov_model=json.load(f)
     text_model = SpacyText.from_json(markov_model)
 
@@ -168,31 +171,3 @@ def generate_text(text_model, n_sentences, **kwargs):
         sentences.append((text_model.make_sentence(**kwargs)))
 
     return sentences
-
-
-
-if __name__=='__main__':
-
-    #Filename of the markov model we'll load
-    #and whether to generate it again
-    markov_model_fname_to_load='saved_models/text_model.txt'
-    generate_Markov_Model=False
-
-
-    
-    #Do we want to save our model?
-    save=True
-    savename='saved_models/text_model.json'
-
-    text=load_text_from_txtfile(fname='../example_corpus/abstracts.txt')
-
-    if generate_Markov_Model:
-        text_model=make_markov_model(text, savename=None, simple_testing=True)
-    else:
-        text_model=load_markov_model(markov_model_fname_to_load)
-
-    sentences=generate_text(text_model, n_sentences=5, tries=100)
-
-    for s in sentences:
-        print u'{}'.format(s)
-        print '\n'
