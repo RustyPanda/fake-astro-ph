@@ -25,8 +25,8 @@ def save_ads_to_collection(collection, query_max_rows=2000):
 
     # we want to query every two months or so to avoid the 2k row limit
     # TODO refactor out to main.py?
-    start_date = datetime.date(2017, 10, 1)
-    end_date = datetime.date(2018, 2, 1)
+    start_date = datetime.date(2010, 1, 1)
+    end_date = datetime.date(2018, 4, 1)
     interval = datetime.timedelta(days=60)
 
     query_start_date = start_date

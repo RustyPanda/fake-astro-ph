@@ -1,3 +1,5 @@
 ads
 pymongo
 mongomock
+gensim
+spacy
