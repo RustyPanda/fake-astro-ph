@@ -32,7 +32,6 @@ def save_query_to_collection(query_params, collection, api_token=None):
         with open('api_token.txt', 'r') as f:
             api_token = f.read()
     # don't put this on github
-    api_token =
     ads.config.token = api_token
 
     q = ads.SearchQuery(**query_params)  #  max allowed rows

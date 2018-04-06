@@ -3,10 +3,10 @@
 # example search: arxiv_class:"Astrophysics of Galaxies"
 
 import ads
-# don't put this on github
 
 
-api_token = 'HBX51eAinpW4XVvNwXkfuvrpzRwvKEUt7zS6NPsc'
+with open('api_token.txt', 'r') as f:
+    api_token = f.read()
 ads.config.token = api_token
 
 useful_attributes = [
