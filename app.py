@@ -37,7 +37,7 @@ def tracker():
 
     markov_model_loc = 'saved_models/text_model.txt'  # markov model we'll load
     text_model = generate_sentences.load_markov_model(markov_model_loc)
-    fake_titles = generate_sentences.generate_text(text_model, n_sentences=20, tries=100)
+    fake_titles = generate_sentences.generate_text(text_model, n_sentences=5, tries=100)
 
 
     html = render_template(

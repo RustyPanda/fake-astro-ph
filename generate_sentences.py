@@ -169,5 +169,6 @@ def generate_text(text_model, n_sentences, **kwargs):
     sentences=[]
     for i in range(n_sentences):
         sentences.append((text_model.make_sentence(**kwargs)))
+        sentences.append((text_model.make_short_sentence(max_chars=1000, min_chars=100, **kwargs)))
 
     return sentences
