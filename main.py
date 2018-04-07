@@ -1,19 +1,20 @@
-import subprocess
+import itertools
 
 from pymongo import MongoClient
 
-import functools
+from downloader import ads_to_mongodb
+from embedder import train_embedding
+from randomiser import generate_sentences
 
-import ads_to_mongodb
-import train_embedding
-import generate_sentences
+embedding_save_loc = 'word2vec_embeddings/all_arxiv_titles_abstracts_embedding.txt'
+markov_model_loc = 'saved_models/all_arxiv_titles_abstracts_model.txt'  # markov model we'll save and/or load
 
-embedding_save_loc = 'word2vec_embeddings/all_arxiv_embedding.txt'
-markov_model_loc = 'saved_models/text_model.txt'  # markov model we'll load
-
-fresh_download = True
-fresh_embedding = True
+fresh_download = False
+fresh_embedding = False
 fresh_markov_model = True
+
+# expects running mongodb instance
+# In shell: mongod --dbpath ~/mongodb/data/db.
 
 # connect
 client = MongoClient()  # default host/port
@@ -31,19 +32,27 @@ if fresh_download:
 
 corpus = train_embedding.Corpus(papers=ads_papers)  # save the collection in a corpus object with yield method
 if fresh_embedding:
-    embedding = train_embedding.get_vectors(corpus, save_loc=embedding_save_loc)
+    embedding = train_embedding.embed_corpus(corpus, save_loc=embedding_save_loc)
 
+# TODO filter markov base text by arxiv section
 if fresh_markov_model:
-    text_model = generate_sentences.make_markov_model(
-        functools.reduce(lambda current, next: next + '. ' + current, corpus.titles),
-        savename=markov_model_loc)
+    n_titles = 10000000  # load in memory only n titles (for speed)
+    selected_titles = itertools.islice(corpus.get_titles(ads_keyword='Astrophysics - Astrophysics of Galaxies'), n_titles)
+    all_titles_string = '. '.join(selected_titles)
+    print('Begin training Markov model')
+    markov_model = generate_sentences.make_markov_model(
+        all_titles_string,
+        save_loc=markov_model_loc,
+    )
+
 else:
-    text_model = generate_sentences.load_markov_model(markov_model_loc)
+    markov_model = generate_sentences.load_markov_model(markov_model_loc)
 
-sentences = generate_sentences.generate_text(text_model, n_sentences=20, tries=100)
+title_kwargs = dict(max_chars=600, min_chars=100, tries=100)
+titles = generate_sentences.generate_text(markov_model, n_sentences=20, sentence_params=title_kwargs)
 
-for s in sentences:
-    print(u'{}'.format(s).capitalize())
+for s in titles:
+    print(u'{}'.format(s))
     print('\n')
 
 db.eval("db.shutdownServer()")

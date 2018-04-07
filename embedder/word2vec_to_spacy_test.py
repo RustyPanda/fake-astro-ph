@@ -1,6 +1,6 @@
 import pytest
 
-import word2vec_to_spacy
+from embedder import word2vec_to_spacy
 
 
 @pytest.fixture

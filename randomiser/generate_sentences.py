@@ -1,10 +1,12 @@
-import markovify
-import re
-import spacy
-from unidecode import unidecode
-import json
 
-import word2vec_to_spacy
+import re
+import json
+from unidecode import unidecode
+
+import markovify
+
+from embedder import word2vec_to_spacy
+
 
 class SpacyText(markovify.Text):
     """
@@ -20,6 +22,7 @@ class SpacyText(markovify.Text):
     def from_dict(cls, obj, **kwargs):
         """
         create a class from a dictionary
+        # Expects obj to have state_size, json-format chain and parsed_sentences attributes
         """
         return cls(
             None,
@@ -43,11 +46,8 @@ class SpacyText(markovify.Text):
             self:
             corpus: a spacey document corpus (a 'doc'), with a .sents attribute 
         """
-        sentence_list = []
-        for sentence in corpus.sents:
-            sentence_list.append(sentence)
+        return [sentence for sentence in corpus.sents]
 
-        return sentence_list
 
     def word_split(self, sentence):
         """
@@ -55,6 +55,7 @@ class SpacyText(markovify.Text):
         attributes
         """
         return ["::".join((word.orth_,word.pos_)) for word in sentence]
+
 
     def word_join(self, words):
         """
@@ -64,7 +65,6 @@ class SpacyText(markovify.Text):
 
         sentence = " ".join(word.split("::")[0] for word in words)
         return sentence
-
 
 
     def test_sentence_input(self, sentence):
@@ -85,18 +85,6 @@ class SpacyText(markovify.Text):
         if re.search(reject_pat, decoded): return False
         return True
 
-    def load_spacy(self, embedding):
-        """
-        Load the embedding we'll use with spacy
-        """
-
-        nlp = spacy.load(embedding)
-        #This was required when I changed from 'en' to en_vectors_web_lg.
-        #Not entirely sure why?
-        nlp.add_pipe(nlp.create_pipe('sentencizer'))
-
-        
-        return nlp
 
     def generate_corpus(self, text):
         """
@@ -104,71 +92,42 @@ class SpacyText(markovify.Text):
         "sentences," each of which is a list of words. Before splitting into 
         words, the sentences are filtered through `self.test_sentence_input`
         """
-        # embedding='en_vectors_web_lg'
-        # nlp=self.load_spacy(embedding)
-
-        nlp = word2vec_to_spacy.load_spacy_nlp_from_word2vec('word2vec_embeddings/galaxies_embedding.txt')
+        # create an nlp with a vocab of the word2vec embedding
+        nlp = word2vec_to_spacy.load_spacy_nlp_from_word2vec('word2vec_embeddings/all_arxiv_titles_abstracts_embedding.txt')
         nlp.add_pipe(nlp.create_pipe('sentencizer'))
 
         spacy_corpus=nlp(text)
         sentences = self.sentence_split(spacy_corpus)
-        # passing = filter(self.test_sentence_input, sentences)
-        runs = map(self.word_split, sentences)
+        safe_sentences = filter(self.test_sentence_input, sentences)
+        runs = map(self.word_split, safe_sentences)
 
         return runs
 
 
-
-def load_text_from_txtfile(fname):
-
-    # Get raw text as string.
-    # Ensure the encoding is handled properly!
-    import io
-    with io.open(fname, "r", encoding="utf-8") as f:
-        text = f.read() 
-
-    return text
-
-def load_text_from_db(text_iterable):
-
-    all_texts=list(text_iterable)
-    return all_texts
-
-
-def make_markov_model(text, textClass=SpacyText, savename=None):
-
+def make_markov_model(text, textClass=SpacyText, save_loc=None):
     """
     Build a Markovify text model, using either the base Text class
     or a custom one
     """
     if textClass is None:
-        textClass=markovify.Text
+        textClass = markovify.Text
 
     text_model = textClass(text)
-    
-    if savename:
+
+    if save_loc:
         model_json = text_model.to_json()
-        with open(savename, 'w') as outfile:
+        with open(save_loc, 'w') as outfile:
             json.dump(model_json, outfile)
 
     return text_model
 
 
 def load_markov_model(fname):
-
     with open(fname, 'r') as f:
-        markov_model=json.load(f)
-    text_model = SpacyText.from_json(markov_model)
-
-    return text_model
+        markov_model = json.load(f)
+    return SpacyText.from_json(markov_model)
 
 
-
-def generate_text(text_model, n_sentences, **kwargs):
-    # return five randomly-generated sentences
-    sentences=[]
-    for i in range(n_sentences):
-        sentences.append((text_model.make_sentence(**kwargs)))
-        sentences.append((text_model.make_short_sentence(max_chars=1000, min_chars=100, **kwargs)))
-
-    return sentences
+def generate_text(text_model, n_sentences, sentence_params):
+    # return randomly-generated short sentences
+    return [text_model.make_short_sentence(**sentence_params) for n in range(n_sentences)]

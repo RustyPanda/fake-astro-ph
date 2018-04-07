@@ -1,9 +1,9 @@
 
 import os
 
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template
 
-import generate_sentences
+from randomiser import generate_sentences
 
 app = Flask(__name__)
 

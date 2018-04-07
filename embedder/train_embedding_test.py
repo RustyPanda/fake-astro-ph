@@ -2,7 +2,7 @@ import pytest
 
 import mongomock
 
-import train_embedding
+from embedder import train_embedding
 
 
 @pytest.fixture
@@ -47,10 +47,10 @@ def test_corpus_fields(corpus):
 
 
 def test_get_vectors():
-    model = train_embedding.get_vectors(['galaxies and clusters'.split(), 'cluster and galaxies'.split()])
+    model = train_embedding.embed_corpus(['galaxies and clusters'.split(), 'cluster and galaxies'.split()])
     model.similarity('galaxies', 'clusters')
 
 
 def test_get_vectors_from_corpus(corpus):
-    model = train_embedding.get_vectors(corpus)
+    model = train_embedding.embed_corpus(corpus)
     print(model.similarity('galaxies', 'clusters'))
