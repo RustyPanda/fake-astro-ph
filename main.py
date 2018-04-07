@@ -6,20 +6,20 @@ from downloader import ads_to_mongodb
 from embedder import train_embedding
 from randomiser import generate_sentences
 
-embedding_save_loc = 'word2vec_embeddings/all_arxiv_titles_abstracts_embedding.txt'
-markov_model_loc = 'saved_models/all_arxiv_titles_abstracts_model.txt'  # markov model we'll save and/or load
+embedding_loc = 'data/word2vec_embeddings/all_arxiv_titles_abstracts_embedding.txt'
+markov_model_loc = 'data/saved_models/all_arxiv_titles_abstracts_model.txt'
 
 fresh_download = False
-fresh_embedding = False
+fresh_embedding = True
 fresh_markov_model = True
 
 # expects running mongodb instance
 # In shell: mongod --dbpath ~/mongodb/data/db.
 
 # connect
-client = MongoClient()  # default host/port
+client = MongoClient()  # expects default host/port
 
-# # create/connect to instance database
+# create/connect to instance database
 db = client.all_arxiv_database
 ads_papers = db.ads_papers  # collection
 
@@ -32,14 +32,13 @@ if fresh_download:
 
 corpus = train_embedding.Corpus(papers=ads_papers)  # save the collection in a corpus object with yield method
 if fresh_embedding:
-    embedding = train_embedding.embed_corpus(corpus, save_loc=embedding_save_loc)
+    embedding = train_embedding.embed_corpus(corpus, save_loc=embedding_loc)
 
 # TODO filter markov base text by arxiv section
 if fresh_markov_model:
     n_titles = 10000000  # load in memory only n titles (for speed)
     selected_titles = itertools.islice(corpus.get_titles(ads_keyword='Astrophysics - Astrophysics of Galaxies'), n_titles)
     all_titles_string = '. '.join(selected_titles)
-    print('Begin training Markov model')
     markov_model = generate_sentences.make_markov_model(
         all_titles_string,
         save_loc=markov_model_loc,

@@ -48,7 +48,6 @@ def embed_corpus(corpus, save_loc=None):
     # see https://rare-technologies.com/word2vec-tutorial/
     # see https://radimrehurek.com/gensim/models/word2vec.html
     # all parameters: https://radimrehurek.com/gensim/models/word2vec.html#gensim.models.word2vec.Word2Vec
-    print(next(corpus.all_documents))
     model = gensim.models.Word2Vec(corpus.all_documents, size=100, window=5, min_count=5, workers=4)
     if save_loc is not None:
         model.wv.save_word2vec_format(save_loc)

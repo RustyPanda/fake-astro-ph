@@ -86,6 +86,7 @@ class SpacyText(markovify.Text):
         return True
 
 
+    # TODO hard-coded embedding loc is stupid and should be changed
     def generate_corpus(self, text):
         """
         Given a text string, returns a list of lists; that is, a list of
@@ -93,7 +94,8 @@ class SpacyText(markovify.Text):
         words, the sentences are filtered through `self.test_sentence_input`
         """
         # create an nlp with a vocab of the word2vec embedding
-        nlp = word2vec_to_spacy.load_spacy_nlp_from_word2vec('word2vec_embeddings/all_arxiv_titles_abstracts_embedding.txt')
+        nlp = word2vec_to_spacy.load_spacy_nlp_from_word2vec(
+            'data/word2vec_embeddings/all_arxiv_titles_abstracts_embedding.txt')
         nlp.add_pipe(nlp.create_pipe('sentencizer'))
 
         spacy_corpus=nlp(text)
