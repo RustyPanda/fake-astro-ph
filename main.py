@@ -1,4 +1,5 @@
 import itertools
+import io
 
 from pymongo import MongoClient
 
@@ -10,8 +11,9 @@ embedding_loc = 'data/word2vec_embeddings/all_arxiv_titles_abstracts_embedding.t
 markov_model_loc = 'data/saved_models/all_arxiv_titles_abstracts_model.txt'
 
 fresh_download = False
-fresh_embedding = True
-fresh_markov_model = True
+fresh_embedding = False
+fresh_markov_model = False
+cache_titles = True
 
 # expects running mongodb instance
 # In shell: mongod --dbpath ~/mongodb/data/db.
@@ -34,7 +36,7 @@ corpus = train_embedding.Corpus(papers=ads_papers)  # save the collection in a c
 if fresh_embedding:
     embedding = train_embedding.embed_corpus(corpus, save_loc=embedding_loc)
 
-# TODO filter markov base text by arxiv section
+
 if fresh_markov_model:
     n_titles = 10000000  # load in memory only n titles (for speed)
     selected_titles = itertools.islice(corpus.get_titles(ads_keyword='Astrophysics - Astrophysics of Galaxies'), n_titles)
@@ -47,11 +49,16 @@ if fresh_markov_model:
 else:
     markov_model = generate_sentences.load_markov_model(markov_model_loc)
 
-title_kwargs = dict(max_chars=600, min_chars=100, tries=100)
-titles = generate_sentences.generate_text(markov_model, n_sentences=20, sentence_params=title_kwargs)
+title_kwargs = dict(max_chars=700, min_chars=100, tries=100)
+titles = generate_sentences.generate_text(markov_model, n_sentences=1000, sentence_params=title_kwargs)
 
-for s in titles:
-    print(u'{}'.format(s))
-    print('\n')
+
+if cache_titles:
+    with io.open('data/cached_titles/titles.txt', mode='w') as f:
+        f.write( '\n'.join(titles))
+else:
+    for s in titles:
+        print(u'{}'.format(s))
+        print('\n')
 
 db.eval("db.shutdownServer()")
