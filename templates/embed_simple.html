@@ -39,8 +39,8 @@
     <!-- Image and text -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="">
-            <img src="https://en.wikipedia.org/wiki/ArXiv#/media/File:ArXiv_web.svg" width="41" height="30" border='3' class="d-inline-block align-top" alt="">
-            not-astro-ph
+            <img src="http://1000logos.net/wp-content/uploads/2017/09/Symbol-NHS.jpg" width="50" height="30" border='3' class="d-inline-block align-top" alt="">
+            Let Me Know
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -51,7 +51,7 @@
                     <a class="nav-link" href="/tracker">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link disabled">Test Yourself</a>
+                    <a class="nav-link disabled">More Info</a>
                 </li>
             </ul>
         </div>
@@ -64,24 +64,39 @@
 
             <div class="row">
 
-                <div class="row">
-
-                    <div><p>        </p></div>
-
-                    <div><p> <b>Here are the latest titles: </b><br></br></p></div>
-
-                </div>
-                <div class="row">
-
-                {% for title in fake_titles %}
-
-                    <div><p> {{ title }}  <br></br></p></div>
-
-                {% endfor %}
-
-                </div>
+                <h1>Welcome!</h1>
 
             </div>
+
+            <div class="row">
+
+                <div><p> <b> Your appointment is in: </b><br></br></p></div>
+
+            </div>
+
+            <div class="row">
+
+                <div><h1> {{ time_to_appointment }}  <br></br></h1></div>
+
+            </div>
+
+            <div><p> <b> Minutes </b><br></br></p></div>
+
+            <div class="row">
+
+                <div><h3> How can we help? </h3></div>
+
+
+        </div>
+
+            <div class="row">
+                <textarea rows="4" cols="40" name="comment" form="usrform">Enter question for doctor here...</textarea>
+            </div>
+
+        </div>
+
+
+
 
             <div class="row align">
 
@@ -89,7 +104,7 @@
                     <img class="mr-3 rounded" src="https://zljqya.dm2302.livefilestore.com/y4muQ4xtcQQ7DcmPh0rnhhGaDNlCWFkQDsfc1RmQMaLLNAduLKK20U4lpa1dhUvXqfJQYZ-dO6mcxqYFszdP6AYKuDGbR-k99-X_3zEo-rl8DkcCwtItoULHTTHioExd5rk2EgK6a0jw0-cfTzBuGM47OHl_vb2j7Zt4RJ12nNaUnwtemv1NM6HhpUCESbKJAstURV32BsyWWDSGfqTSXlJqg?width=189&height=189&cropmode=none" width='64' height='64' alt="question mark">
                     <div class="media-body">
                         <h5 class="mt-0">What's this?</h5>
-                        Not-astro-ph was created on the EWASS 2018 Hack Day by Mike Walmsley and Sam Vaughan
+                        Let Me Know was created by Team 5 during the Innovation Form paediatric hackathon.
                     </div>
                 </div>
 
