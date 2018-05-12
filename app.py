@@ -19,7 +19,7 @@ def getitem(obj, item, default):
 def waiting():
 
 
-    time_to_appointment = 12
+    time_to_appointment = '12 - 16'
 
     html = render_template(
         'embed_simple.html',
