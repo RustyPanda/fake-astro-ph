@@ -26,11 +26,6 @@ def home():
     n_titles = 8
     cached = True
 
-<<<<<<< HEAD
-    time_to_appointment = '12 - 16'
-=======
->>>>>>> parent of 3c4dfc7... Update with NHS app on Heroku
-
     if cached:
         with io.open('data/cached_titles/titles.txt', mode='r') as f:
             all_titles = f.readlines()
