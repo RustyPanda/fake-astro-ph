@@ -3,7 +3,7 @@ import os
 
 from flask import Flask, render_template, redirect, url_for, request
 
-# import generate_sentences
+import generate_sentences
 
 app = Flask(__name__)
 
@@ -15,31 +15,58 @@ def getitem(obj, item, default):
         return obj[item]
 
 
-@app.route("/waiting", methods=['GET', 'POST'])
-def waiting():
+@app.route("/", methods=['GET', 'POST'])
+def tracker():
+    """ Very simple embedding of a polynomial chart
+    """
+
+    # possible_products = ['Syringes', 'Cannulas', 'Needles', 'Catheters']
+    # possible_hospitals = ['Western General', 'Royal Edinburgh Hospital']
+    #
+    # # Grab the inputs arguments from the URL
+    # form = request.form
+    #
+    # product = getitem(form, 'product', 'Syringes').rstrip(' ') # mysterious right space appears
+    # other_products = [item for item in possible_products if item != product]
+    # products = [product] + other_products
+    #
+    # hospital = getitem(form, 'hospital', 'Western General').rstrip(' ') # mysterious right space appears
+    # other_hospitals = [item for item in possible_hospitals if item != hospital]
+    # hospitals = [hospital] + other_hospitals
 
 
+    markov_model_loc = 'saved_models/text_model.txt'  # markov model we'll load
+    text_model = generate_sentences.load_markov_model(markov_model_loc)
+    fake_titles = generate_sentences.generate_text(text_model, n_sentences=4, tries=50)
+
+<<<<<<< HEAD
     time_to_appointment = '12 - 16'
+=======
+>>>>>>> parent of 3c4dfc7... Update with NHS app on Heroku
 
     html = render_template(
         'embed_simple.html',
-        time_to_appointment=time_to_appointment
+        # hospitals=hospitals,
+        # products=products,
+        # future_orders=future_orders,
+        # selected_hospital=hospital,
+        # selected_product=product
+        fake_titles=fake_titles
     )
     return html
 
 
-@app.route("/", methods=['GET', 'POST'])
-def login():
-
-    error = None
-    if request.method == 'POST':
-        if request.form['username'] != 'demo' or request.form['date_of_birth'] != 'demo':
-            # error = 'Invalid Credentials. Please try again.'
-            return redirect(url_for('waiting'))
-        else:
-            return redirect(url_for('waiting'))
-    return render_template('login.html', error=error)
-
+# @app.route("/", methods=['GET', 'POST'])
+# def login():
+#
+#     error = None
+#     if request.method == 'POST':
+#         if request.form['username'] != 'demo' or request.form['password'] != 'demo':
+#             error = 'Invalid Credentials. Please try again.'
+#         else:
+#             return redirect(url_for('tracker'))
+#     return render_template('login.html', error=error)
+#
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
