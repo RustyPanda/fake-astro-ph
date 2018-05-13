@@ -2,7 +2,8 @@ import pytest
 
 import mongomock
 
-import ads_to_mongodb
+from downloader import ads_to_mongodb
+
 
 @pytest.fixture
 def query_params():

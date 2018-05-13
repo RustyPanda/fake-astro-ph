@@ -1,9 +1,13 @@
 
 import os
+import io
 
-from flask import Flask, render_template, redirect, url_for, request
+import numpy as np
+from flask import Flask, render_template
+from latex2markdown import LaTeX2Markdown as latex2markdown
 
-import generate_sentences
+from randomiser import generate_sentences
+
 
 app = Flask(__name__)
 
@@ -16,59 +20,38 @@ def getitem(obj, item, default):
 
 
 @app.route("/", methods=['GET', 'POST'])
-def tracker():
-    """ Very simple embedding of a polynomial chart
-    """
-
-    # possible_products = ['Syringes', 'Cannulas', 'Needles', 'Catheters']
-    # possible_hospitals = ['Western General', 'Royal Edinburgh Hospital']
-    #
-    # # Grab the inputs arguments from the URL
-    # form = request.form
-    #
-    # product = getitem(form, 'product', 'Syringes').rstrip(' ') # mysterious right space appears
-    # other_products = [item for item in possible_products if item != product]
-    # products = [product] + other_products
-    #
-    # hospital = getitem(form, 'hospital', 'Western General').rstrip(' ') # mysterious right space appears
-    # other_hospitals = [item for item in possible_hospitals if item != hospital]
-    # hospitals = [hospital] + other_hospitals
+def home():
 
 
-    markov_model_loc = 'saved_models/text_model.txt'  # markov model we'll load
-    text_model = generate_sentences.load_markov_model(markov_model_loc)
-    fake_titles = generate_sentences.generate_text(text_model, n_sentences=4, tries=50)
+    n_titles = 8
+    cached = True
 
 <<<<<<< HEAD
     time_to_appointment = '12 - 16'
 =======
 >>>>>>> parent of 3c4dfc7... Update with NHS app on Heroku
 
+    if cached:
+        with io.open('data/cached_titles/titles.txt', mode='r') as f:
+            all_titles = f.readlines()
+            fake_titles = np.random.choice(all_titles, n_titles)
+    else:
+        markov_model_loc = 'saved_models/text_model.txt'  # markov model we'll load
+        text_model = generate_sentences.load_markov_model(markov_model_loc)
+        fake_titles = generate_sentences.generate_text(text_model, n_sentences=n_titles, tries=100)
+
+    fake_titles_markdown = [latex2markdown(title).to_markdown() for title in fake_titles]
+
     html = render_template(
         'embed_simple.html',
-        # hospitals=hospitals,
-        # products=products,
-        # future_orders=future_orders,
-        # selected_hospital=hospital,
-        # selected_product=product
-        fake_titles=fake_titles
+        fake_titles=fake_titles_markdown
     )
+
     return html
 
 
-# @app.route("/", methods=['GET', 'POST'])
-# def login():
-#
-#     error = None
-#     if request.method == 'POST':
-#         if request.form['username'] != 'demo' or request.form['password'] != 'demo':
-#             error = 'Invalid Credentials. Please try again.'
-#         else:
-#             return redirect(url_for('tracker'))
-#     return render_template('login.html', error=error)
-#
-
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
+
 
 app.run(host='0.0.0.0', port=port)

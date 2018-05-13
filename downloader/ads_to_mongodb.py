@@ -37,7 +37,7 @@ def save_ads_to_collection(collection, query_max_rows=2000):
         query_text = 'arxiv_class:("High Energy Astrophysical Phenomena" OR "Instrumentation and Methods for Astrophysics" OR "Solar and Stellar Astrophysics" OR "Earth and Planetary Astrophysics" OR "Cosmology and Nongalactic Astrophysics" OR "Astrophysics of Galaxies") AND pubdate:[{} TO {}]'.format(
             query_start_date, query_end_date)
         query_params = dict(q=query_text, fl=useful_attributes, rows=query_max_rows)  #  max allowed rows
-        print('Making query {}'.format(query_text))  # temp
+        print('Making query {}'.format(query_text))
         save_query_to_collection(query_params, collection)
         query_start_date += interval
         query_end_date += interval

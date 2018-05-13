@@ -5,3 +5,4 @@ gensim
 spacy
 markovify
 flask
+latex2markdown

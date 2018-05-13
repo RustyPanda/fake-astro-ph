@@ -1,5 +1,5 @@
 import pytest
-import generate_sentences as G
+from randomiser import generate_sentences as G
 import markovify
 import os
 

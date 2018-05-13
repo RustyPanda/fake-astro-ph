@@ -24,8 +24,9 @@
 
 
 </head>
+
+
 <body>
-<!-- A simple form for changing the graph -->
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -33,87 +34,65 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 
-<div class="container">
-    <!-- Content here -->
+<!-- Enable MathJax -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "AMSmath.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\[","\]"] ],
+            processEscapes: true
+        },
+    });
+</script>
 
-    <!-- Image and text -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="">
-            <img src="https://en.wikipedia.org/wiki/ArXiv#/media/File:ArXiv_web.svg" width="41" height="30" border='3' class="d-inline-block align-top" alt="">
-            not-astro-ph
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="/tracker">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled">Test Yourself</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
 
-    <div class="row">
+    <div class="container-fluid">
+        <!-- Content here -->
 
-        <div class="col-8">
+        <!-- Image and text -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="">
+                <img src="https://en.wikipedia.org/wiki/ArXiv#/media/File:ArXiv_web.svg" width="41" height="30" border='3' class="d-inline-block align-top" alt="">
+                not-astro-ph
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/tracker">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled">Test Yourself</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
-            <div class="row">
+
+        <div class="row">
+
+            <div class = "col"></div>
+
+            <div class="col-lg-10">
 
                 <div class="row">
 
-<<<<<<< HEAD
-            </div>
 
-            <div class="row">
-
-                <div><p><b>Your appointment is in:</b></p></div>
-
-            </div>
-
-            <div class="row">
-                <div><h1> {{ time_to_appointment }} </h1></div>
-            </div>
-
-            <div class="row">
-                <p><b>Minutes</b></p>
-            </div>
-
-            <!--<p><br></br></p>-->
-            <div class="row">
-
-                <h3>Your doctor</h3>
-
-            </div>
-
-            <div class="row">
-
-
-
-                <p><br></br></p>
-
-                <div class="media">
-                    <img class="mr-3 rounded" src="https://lh3.googleusercontent.com/cvdOwriubpv4Hc1LoDuItwzcWz0Th_EaZngOjfpRwbeiXdFNMwmR1lh4oQFP-ZOpFGWycOvW_XErBY-ylg" height="100" width="100" alt="question mark">
-                    <div class="media-body">
-                        <b class="'mt-0">Dr Seuss, Paediatrics</b>
-                        <p>Dr Seuss plays drums in a punk rock band.</p>
-
-                    </div>
                 </div>
 
-            </div>
-=======
-                    <div><p>        </p></div>
+                <div class="row">
 
                     <div><p> <b>Here are the latest titles: </b><br></br></p></div>
 
                 </div>
-                <div class="row">
->>>>>>> parent of 3c4dfc7... Update with NHS app on Heroku
+
 
                 {% for title in fake_titles %}
 
@@ -121,41 +100,18 @@
 
                 {% endfor %}
 
-                </div>
-
-<<<<<<< HEAD
-            <are class="row">
-                <textarea rows="4" cols="40" name="comment" form="usrform">Enter question for doctor here...</textarea>
-            </div>
-
-        </div>
-
-
-=======
-            </div>
-
->>>>>>> parent of 3c4dfc7... Update with NHS app on Heroku
             <div class="row align">
 
                 <div class="media">
                     <img class="mr-3 rounded" src="https://zljqya.dm2302.livefilestore.com/y4muQ4xtcQQ7DcmPh0rnhhGaDNlCWFkQDsfc1RmQMaLLNAduLKK20U4lpa1dhUvXqfJQYZ-dO6mcxqYFszdP6AYKuDGbR-k99-X_3zEo-rl8DkcCwtItoULHTTHioExd5rk2EgK6a0jw0-cfTzBuGM47OHl_vb2j7Zt4RJ12nNaUnwtemv1NM6HhpUCESbKJAstURV32BsyWWDSGfqTSXlJqg?width=189&height=189&cropmode=none" width='64' height='64' alt="question mark">
                     <div class="media-body">
                         <h5 class="mt-0">What's this?</h5>
-<<<<<<< HEAD
-                        Let Me Know was created by Team 5 during the Innovation Forum paediatric hackathon.
-=======
                         Not-astro-ph was created on the EWASS 2018 Hack Day by Mike Walmsley and Sam Vaughan
->>>>>>> parent of 3c4dfc7... Update with NHS app on Heroku
                     </div>
                 </div>
-
-            </div>
-
         </div>
 
     </div>
-
-</div>
 
 
 </body>
